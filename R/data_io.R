@@ -192,8 +192,9 @@ record_states <- function(records, corrections, covs, located_share = 0.8, candi
     r$lon <- ifelse(is_point, r$lon, xy[, 1])
     r$lat <- ifelse(is_point, r$lat, xy[, 2])
     heavy <- which.max(r$weight)
+    unique_heavy <- sum(r$weight == r$weight[heavy]) == 1L
     records$basis[i] <- "entomologist"
-    if (nrow(r) == 1 || r$weight[heavy] >= located_share - 1e-9) {
+    if (unique_heavy && r$weight[heavy] >= located_share - 1e-9) {
       records$status[i] <- "located"
       records$lon[i] <- r$lon[heavy]; records$lat[i] <- r$lat[heavy]
       records$exact[i] <- is_point[heavy]

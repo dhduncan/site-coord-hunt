@@ -42,6 +42,29 @@ chk(st$records$status[st$records$record_id == a] == "narrowed", "50/50 should be
 chk(nrow(st$cells) == 2 && all(st$cells$weight == 0.5), "marked cells not kept")
 chk(!anyNA(st$cells$lon) && !anyNA(st$cells$lat), "marked cells should get derived centres")
 
+# A threshold must not let which.max() choose among tied cells.
+tie_dir <- tempfile(); dir.create(tie_dir)
+append_correction(act(a, cs[1:2], c(0.5, 0.5), "even"), tie_dir)
+tie <- record_states(inp$records, read_corrections(tie_dir), covs,
+                     located_share = 0.5, candidates = cand)
+chk(tie$records$status[tie$records$record_id == a] == "narrowed",
+    "a tied 50/50 split must stay narrowed at a 50% threshold")
+chk(nrow(tie$cells) == 2, "both tied cells must remain available")
+
+three_way_dir <- tempfile(); dir.create(three_way_dir)
+append_correction(act(a, cs, rep(1 / 3, 3), "even"), three_way_dir)
+three_way <- record_states(inp$records, read_corrections(three_way_dir), covs,
+                           located_share = 0.3, candidates = cand)
+chk(three_way$records$status[three_way$records$record_id == a] == "narrowed",
+    "three equal cells must stay narrowed at a lower threshold")
+
+dominant_dir <- tempfile(); dir.create(dominant_dir)
+append_correction(act(b, cs, c(0.5, 0.3, 0.2), "manual"), dominant_dir)
+dominant <- record_states(inp$records, read_corrections(dominant_dir), covs,
+                          located_share = 0.5, candidates = cand)
+chk(dominant$records$status[dominant$records$record_id == b] == "located",
+    "a unique cell at the threshold should still count as located")
+
 append_correction(act(b, cs[1:2], c(0.85, 0.15)), dir)
 st <- record_states(inp$records, read_corrections(dir), covs, located_share = 0.8, candidates = cand)
 rb <- st$records[st$records$record_id == b, ]
