@@ -65,6 +65,9 @@ chk(fails(build_candidates(layer(c("d", "d"), list(sq(0,1,0,1), sq(1,2,1,2))), m
 chk(fails(build_candidates(layer(c("a", NA), list(sq(0,1,0,1), sq(1,2,1,2))), mask, "id", "nm")), "a missing id is refused")
 nocrs <- layer("a", list(sq(0,1,0,1))); st_crs(nocrs) <- NA
 chk(fails(build_candidates(nocrs, mask, "id", "nm")), "a polygon layer with no CRS is refused")
+# GeoPackage stores a missing CRS as "Undefined Cartesian", which must be refused too
+gp <- tempfile(fileext = ".gpkg"); suppressWarnings(st_write(nocrs, gp, quiet = TRUE))
+chk(fails(build_candidates(st_read(gp, quiet = TRUE), mask, "id", "nm")), "a layer stored with an undefined CRS is refused")
 # a layer in another coordinate system is transformed to the mask's
 ll <- st_transform(layer(c("a", "b"), list(sq(0, 2, 0, 2), sq(1, 3, 1, 3))), 4326)
 tr <- build_candidates(ll, mask, "id", "nm")

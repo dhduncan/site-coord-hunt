@@ -52,6 +52,7 @@ change), **working default** (accepted for now, easy to change), **open**.
 | # | Decision | Reason | Status |
 |---|---|---|---|
 | 17 | Prototype on simulated data first. | No private data needed to run the repo end to end. The simulation is biased so some units have conditions no located site shares, giving the ranking something to find. | decided |
+| 18 | Real data stays outside the repo and on the machine it is held on, under its data-sharing agreement. It is checked and run locally; what comes back to the developer is a report of counts and summaries, never coordinates, record ids, place names or unit ids. Counts below 5 are shown as "<5" by default. | The Uganda data is under a strict data-sharing agreement. Whether it may be processed in a cloud session is a question for the agreement, so it is not attached to one. The report is built so that it cannot carry identifying detail, and a test checks that. | decided; built |
 
 ## What building taught us
 

@@ -49,10 +49,30 @@ Geolocations are appended to `corrections.csv` and flags to `flags.csv` in that 
 the original `records.csv` is never modified. Dates in `records.csv` may be a full date,
 a month (`2019-04`), a year (`2019`) or blank.
 
+## Checking real data first
+
+Real data should be checked before it is used, and it never needs to leave the machine it
+is held on. Keep it outside the repo, then edit the settings in `data-raw/check_inputs.R`
+(your data folder, the polygon layers, optionally a folder of other rasters) and run it
+from the repo root:
+
+```bash
+Rscript data-raw/check_inputs.R
+```
+
+It changes nothing. It prints a report on the mask (it must be WGS84 longitude/latitude),
+whether every layer lines up with it, the polygon layers, the records (how many fall inside
+the mask, how many match a unit, what the dates look like), and how long one scoring run
+takes on the real mask. The report holds **counts and summaries only**: no coordinates,
+record ids, place names or unit ids, and counts below 5 are shown as `<5`
+(`suppress_below` changes that). Check it against your data-sharing agreement before sharing
+it. `details = TRUE` shows full error messages in your own console; do not share that output.
+
 ## Tests
 
 ```bash
 Rscript tests/test_dates.R
+Rscript tests/test_check_inputs.R
 Rscript tests/test_candidates.R
 Rscript tests/test_scoring.R
 Rscript tests/test_data_io.R
@@ -71,6 +91,7 @@ The prototype runs on simulated data.
 | Scoring of narrowed records over their marked cells | Facilities that are only a point and a radius (they need converting to polygons first) |
 | Polygons converted to weighted candidate cells; overlapping units; automatic placement of single-cell units | |
 | Unmatched or ambiguous names reported, never guessed | |
+| A local check of real inputs that reports counts only | |
 | Located sites shown to entomologists, flagging, modeller review | Multi-user storage |
 | Append-only corrections and flags logs; recompute after each save | |
 | Simulated data (with dates) and tests | |
