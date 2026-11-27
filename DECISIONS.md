@@ -21,6 +21,8 @@ change), **working default** (accepted for now, easy to change), **open**.
 | 6a | Weight = the share of the polygon's area in each cell (uniform within the polygon), normalised over mask cells. | The best we can say without more information is that the sample is equally likely anywhere in the polygon. Habitat could refine it later. | decided; built |
 | 6b | A unit whose polygon covers exactly one mask cell has its records located at that cell automatically, and they join the reference set. | Nothing is left to resolve; asking an entomologist to click the only possible cell wastes their time. An entomologist's own mark still takes precedence. | decided; built |
 | 6c | The model grid is drawn only for the cells in view, and only when that is a manageable number. | Drawing every cell of a real study area would swamp the browser (about 18 MB for 90,000 cells). | decided; built |
+| 6d | **Circumspect use of priors on probable location.** Candidate weights start as the area share of the polygon (uniform within it). A prior on where a sample probably came from (land cover, dwellings, accessibility) is a single per-area layer, built from independent information and never from the niche covariates. It is invoked only if, on records whose location we know, it gives the known cell more probability on average (a higher log score) than a uniform prior does, judged on records not used to build it. Otherwise weights stay uniform within the polygon. Layers are not added because they seem plausible. | Novelty is highest where the species, and the sampling, is least likely: a summit is almost certainly novel and almost certainly not where the sample came from. A prior can correct that, but each one is another assumption, so it must earn its place. A prior fitted from the niche covariates would be circular: it would rate unfamiliar conditions as unlikely, which discounts exactly the novelty we are looking for. | agreed in principle; not built |
+| 6e | With a prior in place, ranking is by expected novelty (the weighted mean), with the best cell kept as a diagnostic, and the ranking under a uniform prior is shown alongside for sensitivity. | The best cell ignores the weights, so it rewards improbable cells. Records that would expand the niche most may have a small prior chance, so the user should be able to see which locations depend on the prior. | agreed in principle; not built |
 
 ## Two people, one app
 
@@ -50,6 +52,7 @@ change), **working default** (accepted for now, easy to change), **open**.
 | # | Decision | Reason | Status |
 |---|---|---|---|
 | 17 | Prototype on simulated data first. | No private data needed to run the repo end to end. The simulation is biased so some units have conditions no located site shares, giving the ranking something to find. | decided |
+| 18 | Real data stays outside the repo and on the machine it is held on, under its data-sharing agreement. It is checked and run locally; what comes back to the developer is a report of counts and summaries, never coordinates, record ids, place names or unit ids. Counts below 5 are shown as "<5" by default. | The Uganda data is under a strict data-sharing agreement. Whether it may be processed in a cloud session is a question for the agreement, so it is not attached to one. The report is built so that it cannot carry identifying detail, and a test checks that. | decided; built |
 
 ## What building taught us
 
@@ -59,7 +62,7 @@ change), **working default** (accepted for now, easy to change), **open**.
 
 ## Not yet decided
 
-The ranking: a unit is currently ranked by its best candidate cell, which favours large polygons (a district will outrank a village), and nested levels make that worse. The mean is the expected novelty. Which to rank by is undecided.
+The ranking: a unit is currently ranked by its best candidate cell. That ignores how likely the cell is, so it favours improbable cells (decision 6e), and it favours large polygons (a district will outrank a village; nested levels make that worse). The size effect is noted, not yet addressed.
 
 See "Open questions" in [DESIGN.md](DESIGN.md): facilities that are only a point and a radius,
 covariate subset, whether records from one unit and date are one site, acceptable

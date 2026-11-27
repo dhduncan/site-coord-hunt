@@ -209,7 +209,8 @@ unit is converted once to its candidate cells (`data-raw/build_candidates.R`, us
 
 - **Weight = the share of the polygon's area that falls in the cell.** This assumes the
   true location is equally likely anywhere within the polygon (uniform; ignoring
-  habitat, which a later habitat restriction could refine). It is not the fraction of
+  habitat or access, which a prior on probable location could refine under the rule in
+  `DECISIONS.md` 6d; none is built yet). It is not the fraction of
   the cell covered: a large polygon has many cells, each covered fully, and they should
   not all weigh the same as a sliver at the edge.
 - **Normalised over mask cells only.** Weights sum to 1 for each unit. A polygon that

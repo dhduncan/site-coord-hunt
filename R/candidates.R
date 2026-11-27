@@ -14,6 +14,13 @@
 # - cell_id is the cell number in the mask raster (fixed: every resource is aligned
 #   to it).
 
+#' TRUE if a layer has no usable coordinate system. A missing one is NA, but formats such as
+#' GeoPackage store "Undefined Cartesian SRS" instead, which reads back as a defined system.
+crs_missing <- function(x) {
+  cr <- sf::st_crs(x)
+  is.na(cr) || isTRUE(grepl("Undefined Cartesian|unknown unit", cr$input))
+}
+
 #' Convert one polygon layer to candidate cells.
 #'
 #' `polygons`: sf layer. `mask`: SpatRaster; NA cells are outside the mask.
@@ -24,7 +31,7 @@
 #' nothing is dropped without being listed.
 build_candidates <- function(polygons, mask, id_col, name_col = id_col, prefix = "") {
   stopifnot(inherits(polygons, "sf"), id_col %in% names(polygons), name_col %in% names(polygons))
-  if (is.na(sf::st_crs(polygons)))
+  if (crs_missing(polygons))
     stop("The polygon layer has no coordinate system; set it before converting.", call. = FALSE)
   ids <- as.character(polygons[[id_col]])
   if (anyNA(ids) || any(!nzchar(ids))) stop("Every polygon needs an id.", call. = FALSE)
